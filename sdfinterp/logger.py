@@ -6,6 +6,7 @@ Created on Nov 1, 2013
 
 import logging
 import sys
+from pdb import set_trace as tr
 
 class LogLevelFilter(object):
     '''Forces a handle to log only a particular level

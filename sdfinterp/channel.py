@@ -4,12 +4,14 @@ Created on Jan 6, 2014
 @author: jbq
 '''
 
-class Channel(object):
+from logger import vlog
+from interpolator import Interpolator
+class Channel( object ):
   '''
   A dynamical channel defined by momentum transfer Q and energy E
   '''
 
-  def __init__(self, phasepoint):
+  def __init__( self, phasepoint ):
     '''
     Attributes:
       p: the domain of the dynamical channel, the (Q,E) pair
@@ -24,8 +26,28 @@ class Channel(object):
   def SetSignalSeries(self, signalseries):
     self.signalseries = signalseries
 
-  #def InitializeInterpolator(self, fseries):
+  def InitializeInterpolator(self, fseries, running_interp_type = 'linear'):
     ''' Initialize the interpolator for this channel
+    
+    Arguments:
+      fseries: list of external parameter values
+      running_interpolation: the type of the local, running interpolation
+
+    Returns:
+      None if error found
+      interpolator attribute if success
     '''
-  #  if len(fseries) != len(self.signalseries):
-      
+    # Handle errors first
+    if not self.signalseries:
+      vlog.error("Signal series not set!")
+      return None
+    if len( fseries ) != len( self.signalseries ):
+      vlog.error("signal and external parameter series have different lenght!")
+      return None
+
+    self.interpolator = Interpolator( fseries, self.signalseries, errorseries=None, running_interp_type = running_interp_type)
+    return self.interpolator
+
+  def __call__(self, fvalue ):
+    ''' Evaluates the interpolator for the fvalue mimicking a function call'''
+    return self.interpolator( fvalue )
