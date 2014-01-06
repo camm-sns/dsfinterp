@@ -1,4 +1,4 @@
-sdfinterp
+dsfinterp
 =========
 
 Summary
@@ -22,6 +22,6 @@ although the series could be generated from experiments, too.
 
 If the { S_i(Q,E) } do not have associated errors, as it is the case
 when computed from simulations, an error will be estimated by a
-running interpolation of the S_i(Q,E) versus f. Thus, the object will
+running regression of the S_i(Q,E) versus f. Thus, the object will
 return S(Q,E) and and associated error(Q,E) any value of f in the
 allowed range.
