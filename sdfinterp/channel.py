@@ -23,15 +23,17 @@ class Channel( object ):
     self.signalseries = None
     self.interpolator = None
 
+
   def SetSignalSeries(self, signalseries):
     self.signalseries = signalseries
 
-  def InitializeInterpolator(self, fseries, running_interp_type = 'linear'):
+
+  def InitializeInterpolator(self, fseries, running_regr_type = 'linear'):
     ''' Initialize the interpolator for this channel
     
     Arguments:
       fseries: list of external parameter values
-      running_interpolation: the type of the local, running interpolation
+      running_regr_type: the type of the local, running regression
 
     Returns:
       None if error found
@@ -39,14 +41,15 @@ class Channel( object ):
     '''
     # Handle errors first
     if not self.signalseries:
-      vlog.error("Signal series not set!")
+      vlog.error( 'Signal series not set!' )
       return None
     if len( fseries ) != len( self.signalseries ):
-      vlog.error("signal and external parameter series have different lenght!")
+      vlog.error( 'signal and external parameter series have different lenght!' )
       return None
 
-    self.interpolator = Interpolator( fseries, self.signalseries, errorseries=None, running_interp_type = running_interp_type)
+    self.interpolator = Interpolator( fseries, self.signalseries, errorseries=None, running_regr_type = running_interp_type)
     return self.interpolator
+
 
   def __call__(self, fvalue ):
     ''' Evaluates the interpolator for the fvalue mimicking a function call'''
