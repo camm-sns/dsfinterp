@@ -3,13 +3,11 @@ Created on Jan 7, 2014
 
 @author: jbq
 '''
-from logger import vlog
 
 class Dsf(object):
   '''
   This class implements a dynamic structure factor
   '''
-
 
   def __init__(self):
     '''
@@ -34,3 +32,17 @@ class Dsf(object):
       return self.errors.ravel()[ index ]
     else:
       return None
+
+  def Load(self, container ):
+    ''' Load intensities and errors from an object or reference
+    '''
+    from dsfload import DsfLoaderFactory
+    loader_factory = DsfLoaderFactory()
+    for datatype in loader_factory.datatypes:
+      try:
+        loader = loader_factory.Instantiate(datatype)
+        self.intensities, self.errors = loader.Load(container)
+        return self.intensities
+      except:
+        pass
+    return None

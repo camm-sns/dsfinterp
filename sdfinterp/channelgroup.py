@@ -18,7 +18,6 @@ class ChannelGroup(object):
     Attributes:
       fseries: list of external parameter values
       channels: series of channels, one for each point of the dynamical domain.
-        Same structure as dyndomain
     '''
     self.fseries = None
     self.channels = None
