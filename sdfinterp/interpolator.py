@@ -27,11 +27,13 @@ class Interpolator(object):
       errors: errorseries or estimated errors at the external parameter values from the running regression
       y: interpolator object for the struc ture factor (cubic spline)
       e: interpolator object for the error (linear)
+      running_regr_type: type of running regression
     '''
     # Deal with possible errors
     if len( fseries ) != len( self.signalseries ):
       vlog.error( 'signal and external parameter series have different lenght!' )
 
+    self.running_regr_type = running_regr_type
     self.range = ( fseries[ 0 ], fseries[ -1 ] )
     # Do running regression and estimate errors
     if running_regr_type == 'linear':
