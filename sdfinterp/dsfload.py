@@ -14,14 +14,11 @@ class DsfLoader(object):
   '''
   __metaclass__ = ABCMeta
 
-  def __init__(self, datatype):
+  def __init__(self):
     '''
     Constructor
     '''
-    if datatype not in DsfLoader.datatypes:
-      vlog.error('Type {0} not recognized as valid container for the dynamics structure factor'.format(datatype))
-      raise
-    self.datatype = datatype
+    self.datatype = None
 
   @abstractmethod
   def Load(self, container):
@@ -31,6 +28,9 @@ class DsfLoader(object):
 
 class DsfLoaderMantidWorkspace2D(DsfLoader):
   ''' This class implements a loader from a Mantid Workspace2D '''
+
+  def __init__(self):
+    self.datatype='mantid::Workspace2D'
 
   def Load(self, ws):
     try:
