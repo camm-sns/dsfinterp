@@ -30,7 +30,7 @@ class Interpolator(object):
       running_regr_type: type of running regression
     '''
     # Deal with possible errors
-    if len( fseries ) != len( self.signalseries ):
+    if len( fseries ) != len( signalseries ):
       vlog.error( 'signal and external parameter series have different lenght!' )
 
     self.running_regr_type = running_regr_type

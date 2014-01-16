@@ -4,7 +4,7 @@ Created on Jan 16, 2014
 @author: Jose Borreguero
 '''
 import unittest
-from logger import tr
+
 from channel import Channel
 
 class TestChannel(unittest.TestCase):
