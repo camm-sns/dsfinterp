@@ -1,15 +1,17 @@
 '''
 Created on Jan 6, 2014
 
-@author: jbq
+@author: Jose Borreguero
 '''
+
+import numpy
+import copy
 
 from logger import vlog
 from interpolator import Interpolator
+
 class Channel( object ):
-  '''
-  A dynamical channel defined by momentum transfer Q and energy E
-  '''
+  ''' This class implements a dynamical channel defined by momentum transfer Q and energy E '''
 
   def __init__( self ):
     '''
@@ -22,16 +24,18 @@ class Channel( object ):
         of error for a particular value of the external parameter 
     '''
     self.signalseries = None
-    self.erorrseries = None
+    self.errorseries = None
     self.interpolator = None
 
   def SetSignalSeries(self, signalseries):
     ''' Initialize the signalseries '''
-    self.signalseries = signalseries
+    self.signalseries = numpy.array(copy.copy(signalseries))
 
   def SetErrorSeries(self, errorseries):
     ''' Initialize the errorseries '''
-    self.errorseries = errorseries
+    self.errorseries = None
+    if errorseries is not None:
+      self.errorseries = numpy.array(copy.copy(errorseries))
 
   def InitializeInterpolator(self, fseries, running_regr_type = 'linear'):
     ''' Initialize the interpolator for this channel

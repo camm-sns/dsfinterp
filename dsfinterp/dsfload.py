@@ -1,7 +1,7 @@
 '''
 Created on Jan 14, 2014
 
-@author: jbq
+@author: Jose Borreguero
 '''
 
 from logger import vlog
@@ -42,10 +42,33 @@ class DsfLoaderMantidWorkspace2D(DsfLoader):
     except:
       raise TypeError
 
+class DsfLoaderMantidNexusFile(DsfLoader):
+  ''' This class implements a loader from a Mantid Nexus file containing
+  one Mantid Workspace2D '''
+
+  def __init__(self):
+    self.datatype='mantid::NexusFile'
+
+  def Load(self, filename):
+
+    try:
+      from mantid.simpleapi import LoadNexus
+    except ImportError:
+      vlog.error('mantid library not found!')
+      raise ImportError
+
+    try:
+      workspace = LoadNexus(filename)
+    except:
+      raise TypeError
+
+    loader = DsfLoaderMantidWorkspace2D()
+    return loader.Load(workspace)
 
 class DsfLoaderFactory(object):
 
   loaders = {'mantid::Workspace2D':DsfLoaderMantidWorkspace2D,
+             'mantid::NexusFile':DsfLoaderMantidNexusFile,
              }
 
   def __init__(self):
@@ -58,6 +81,6 @@ class DsfLoaderFactory(object):
 
   def Instantiate(self, datatype):
     ''' Instantiate a dynamic structure factor loader of appropriate type '''
-    if datatype not in DsfLoaderFactory.datatypes:
+    if datatype not in self.datatypes:
       vlog.error('No dynamic structure factor loader for type {0}'.format(datatype))
-    return DsfLoaderFactory.loaders[datatype](datatype)
+    return DsfLoaderFactory.loaders[datatype]()
