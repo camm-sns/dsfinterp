@@ -88,42 +88,8 @@ class TestInterpolator(unittest.TestCase):
     # Test the bounding errors
     self.assertEqual( interpolator(min(fseries)-1.0), (float('inf'),float('inf')) )
     self.assertEqual( interpolator(max(fseries)+1.0), (float('inf'),float('inf')) )
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
 def suite():
   loader = unittest.TestLoader()
   suite = unittest.TestSuite()

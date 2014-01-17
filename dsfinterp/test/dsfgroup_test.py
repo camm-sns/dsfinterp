@@ -8,18 +8,19 @@ import unittest
 from dsf import Dsf
 from dsfgroup import DsfGroup
 
+def LoadDsfGroup():
+  ''' Helper method, serves a DsfGroup object to the tests '''
+  dsfgroup = DsfGroup()
+  temperatures = '100 150 175 200 225 250 300 350'.split()
+  for temperature in temperatures:
+    dsf = Dsf()
+    dsf.Load('./data/exp{0}K.nxs'.format(temperature))
+    dsf.SetFvalue(float(temperature))
+    dsfgroup.AppendDsf(dsf)
+  return dsfgroup, temperatures
+
 class TestDsfGroup(unittest.TestCase):
   ''' This class implements the unit test for module dsfgroup '''
-
-  def LoadDsfGroup(self):
-    ''' Helper method, serves a DsfGroup object to the tests '''
-    dsfgroup = DsfGroup()
-    temperatures = '100 150 175 200 225 250 300 350'.split()
-    for temperature in temperatures:
-      dsf = Dsf()
-      dsf.Load('./data/exp{0}K.nxs'.format(temperature))
-      dsfgroup.AppendDsf(dsf)
-    return dsfgroup, temperatures
 
   def test_InitDsfGroup(self):
     ''' Test loading of the first dynamic structure factor into a group '''
@@ -33,7 +34,7 @@ class TestDsfGroup(unittest.TestCase):
 
   def test_AppendDsf(self):
     ''' Test loading of several dynamic structure factors into a group '''
-    dsfgroup, temperatures = self.LoadDsfGroup()
+    dsfgroup, temperatures = LoadDsfGroup()
 
     self.assertEqual(len(dsfgroup.dsfseries), len(temperatures))
     self.assertNotEqual(dsfgroup.dsfseries[0], dsfgroup.dsfseries[-1])
@@ -49,7 +50,7 @@ class TestDsfGroup(unittest.TestCase):
   def test_ExtractSignalSeries(self):
     ''' Test extract intensities and errors for a given dynamical channel'''
 
-    dsfgroup, temperatures = self.LoadDsfGroup()
+    dsfgroup, temperatures = LoadDsfGroup()
     self.assertEqual(len(dsfgroup.dsfseries), len(temperatures))
     channel_index = 700*4+321
 

@@ -6,6 +6,7 @@ Created on Jan 7, 2014
 
 import numpy
 from channel import Channel
+from logger import tr
 
 class ChannelGroup(object):
   '''
@@ -34,13 +35,12 @@ class ChannelGroup(object):
     self.fseries = dsfg.fseries
     self.shape = dsfg.shape
     # Instantiate the channels
-    grid = numpy.empty( self.nchannels, dtype = object )
-    vChannel = numpy.vectorize(Channel)
-    self.channels[:,:] = vChannel( grid )
+    self.channels = numpy.empty( self.nchannels, dtype = object )
     # fill the channels.
     for i in range( self.nchannels ):
+      self.channels[i] = Channel()
       self.channels[i].SetSignalSeries( dsfg.ExtractSignalSeries(i) )
-      self.channels[i].SetErrorSeriess( dsfg.ExtractErrorSeries(i) )
+      self.channels[i].SetErrorSeries( dsfg.ExtractErrorSeries(i) )
 
   def InitializeInterpolator(self, running_regr_type = 'linear'):
     ''' Create the spline interpolator for each channel '''
@@ -49,3 +49,7 @@ class ChannelGroup(object):
       return channel
     vinitInterp = numpy.vectorize( initInterp ) # faster than the classic "for" loop
     self.channels[:,:] = vinitInterp( self.channels )
+
+  def __getitem__(self,index):
+    ''' Return channel at appropriate index '''
+    return self.channels[index]

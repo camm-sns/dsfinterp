@@ -49,14 +49,14 @@ class Channel( object ):
       interpolator attribute if success
     '''
     # Handle errors first
-    if not self.signalseries:
+    if self.signalseries is None:
       vlog.error( 'Signal series not set!' )
       return None
     if len( fseries ) != len( self.signalseries ):
       vlog.error( 'signal and external parameter series have different lenght!' )
       return None
 
-    self.interpolator = Interpolator( fseries, self.signalseries, errorseries = self.erorrseries, running_regr_type = running_regr_type)
+    self.interpolator = Interpolator( fseries, self.signalseries, errorseries = self.errorseries, running_regr_type = running_regr_type)
     return self.interpolator
 
 

@@ -33,7 +33,7 @@ class DsfGroup(object):
       self.dsfseries.append( dsf )
     else:
       vlog.error('DsfGroup.AppendDsf() error: Shape of the structure factor different than shape of the group')
-  
+
   def ExtractSignalSeries(self, index ):
     series = []
     for dsf in self.dsfseries:

@@ -63,3 +63,6 @@ class Dsf(object):
         pass
     vlog.error('Appropriate loader not found for supplied data')
     raise TypeError
+
+  def SetFvalue(self,fvalue):
+    self.fvalue = fvalue
