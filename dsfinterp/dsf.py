@@ -5,7 +5,7 @@ Created on Jan 7, 2014
 '''
 
 from logger import vlog, tr
-
+import numpy
 
 class Dsf(object):
   '''
@@ -66,3 +66,9 @@ class Dsf(object):
 
   def SetFvalue(self,fvalue):
     self.fvalue = fvalue
+
+  def SetIntensities(self,intensities):
+    self.intensities = numpy.array(intensities)
+
+  def SetErrors(self,errors):
+    self.errors = numpy.array(errors)

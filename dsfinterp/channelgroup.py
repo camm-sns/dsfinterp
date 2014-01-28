@@ -6,6 +6,7 @@ Created on Jan 7, 2014
 
 import numpy
 from channel import Channel
+from dsf import Dsf
 from logger import tr
 
 class ChannelGroup(object):
@@ -48,8 +49,22 @@ class ChannelGroup(object):
       channel.InitializeInterpolator( self.fseries, running_regr_type = running_regr_type)
       return channel
     vinitInterp = numpy.vectorize( initInterp ) # faster than the classic "for" loop
-    self.channels[:,:] = vinitInterp( self.channels )
+    self.channels[:] = vinitInterp( self.channels )
 
   def __getitem__(self,index):
     ''' Return channel at appropriate index '''
     return self.channels[index]
+
+  def __call__(self,fvalue):
+    ''' Return a dsf object invoking the interpolators for the channels '''
+    signalseries=[]
+    errorseries=[]
+    for ichannel in range(self.nchannels):
+      signal,error = self[ichannel](fvalue)
+      signalseries.append(signal)
+      errorseries.append(error)
+    dsf = Dsf()
+    dsf.SetIntensities(signalseries)
+    dsf.SetErrors(errorseries)
+    dsf.SetFvalue(fvalue)
+    return dsf

@@ -37,6 +37,15 @@ class Channel( object ):
     if errorseries is not None:
       self.errorseries = numpy.array(copy.copy(errorseries))
 
+  @property
+  def range(self):
+    '''Minimum and maximum of the fseries'''
+    try:
+      return self.interpolator.range
+    except:
+      vlog.error("interpolator has not been initialized for this channel")
+      return (float('inf'),float('inf'))
+
   def InitializeInterpolator(self, fseries, running_regr_type = 'linear'):
     ''' Initialize the interpolator for this channel
     
@@ -58,7 +67,6 @@ class Channel( object ):
 
     self.interpolator = Interpolator( fseries, self.signalseries, errorseries = self.errorseries, running_regr_type = running_regr_type)
     return self.interpolator
-
 
   def __call__(self, fvalue ):
     ''' Evaluates the interpolator for the fvalue mimicking a function call'''

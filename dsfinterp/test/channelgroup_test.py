@@ -4,14 +4,14 @@ Created on Jan 17, 2014
 @author: Jose Borreguero
 '''
 import unittest
-import numpy
 
 from logger import tr
 from channelgroup import ChannelGroup
 from dsfgroup_test import LoadDsfGroup
 
 class TestChannelGroup(unittest.TestCase):
-  
+
+  '''
   def test_InitFromDsfGroup(self):
     dsfgroup, fseries = LoadDsfGroup()
     channelgroup = ChannelGroup()
@@ -27,7 +27,21 @@ class TestChannelGroup(unittest.TestCase):
     series = channel.errorseries
     self.assertAlmostEqual(series[0], 0.001094, places=6)
     self.assertAlmostEqual(series[-1], 0.00107701, places=6)
+  '''
 
+  def test_InitializeInterpolator(self):
+    dsfgroup, fseries = LoadDsfGroup()
+    channelgroup = ChannelGroup()
+    channelgroup.InitFromDsfGroup(dsfgroup)
+    channelgroup.InitializeInterpolator(running_regr_type = 'linear')
+
+    temperature = 265.7
+    dsf = channelgroup(temperature) # interpolate a dynamic structure factor
+    channel_index = 700*4+321 # select one channel
+    signal = dsf.intensities[channel_index]
+    error = dsf.errors[channel_index]
+    self.assertAlmostEqual(signal, 0.04916, places=5)
+    self.assertAlmostEqual(error, 0.00147, places=5)
 
 def suite():
   loader = unittest.TestLoader()
