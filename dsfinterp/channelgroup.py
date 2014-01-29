@@ -64,7 +64,7 @@ class ChannelGroup(object):
       signalseries.append(signal)
       errorseries.append(error)
     dsf = Dsf()
-    dsf.SetIntensities(signalseries)
-    dsf.SetErrors(errorseries)
+    dsf.SetIntensities(numpy.array(signalseries).reshape(self.shape))
+    dsf.SetErrors(numpy.array(errorseries).reshape(self.shape))
     dsf.SetFvalue(fvalue)
     return dsf

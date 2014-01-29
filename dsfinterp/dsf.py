@@ -71,4 +71,10 @@ class Dsf(object):
     self.intensities = numpy.array(intensities)
 
   def SetErrors(self,errors):
+    if self.intensities is None:
+      vlog.error('Error: Set intensities before setting errors')
+      return
+    if numpy.array(errors).shape != self.intensities.shape:
+      vlog.error('Error: shape of errors different than shape of intensities')
+      return
     self.errors = numpy.array(errors)
