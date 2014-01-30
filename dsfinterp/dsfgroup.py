@@ -34,6 +34,18 @@ class DsfGroup(object):
     else:
       vlog.error('DsfGroup.AppendDsf() error: Shape of the structure factor different than shape of the group')
 
+  def InsertDsf(self, dsf):
+    ''' Insert in sorted order from low to high fvalue '''
+    if self.shape is None:
+      self.shape =  dsf.shape
+      self.fseries = [ dsf.fvalue, ]
+      self.dsfseries = [ dsf, ]
+    else:
+      import bisect
+      i = bisect.bisect_left(self.fseries, dsf.fvalue)
+      self.fseries.insert(i, dsf.fvalue)
+      self.dsfseries.insert(i, dsf.fvalue)
+
   def ExtractSignalSeries(self, index ):
     series = []
     for dsf in self.dsfseries:

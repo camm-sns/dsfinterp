@@ -37,6 +37,21 @@ class Dsf(object):
     else:
       return None
 
+  def SetFvalue(self,fvalue):
+    self.fvalue = fvalue
+
+  def SetIntensities(self,intensities):
+    self.intensities = numpy.array(intensities)
+
+  def SetErrors(self,errors):
+    if self.intensities is None:
+      vlog.error('Error: Set intensities before setting errors')
+      return
+    if numpy.array(errors).shape != self.intensities.shape:
+      vlog.error('Error: shape of errors different than shape of intensities')
+      return
+    self.errors = numpy.array(errors)
+
   def Load(self, container, datatype=None):
     ''' Load intensities and errors from an object or reference.
     
@@ -64,17 +79,29 @@ class Dsf(object):
     vlog.error('Appropriate loader not found for supplied data')
     raise TypeError
 
-  def SetFvalue(self,fvalue):
-    self.fvalue = fvalue
-
-  def SetIntensities(self,intensities):
-    self.intensities = numpy.array(intensities)
-
-  def SetErrors(self,errors):
-    if self.intensities is None:
-      vlog.error('Error: Set intensities before setting errors')
-      return
-    if numpy.array(errors).shape != self.intensities.shape:
-      vlog.error('Error: shape of errors different than shape of intensities')
-      return
-    self.errors = numpy.array(errors)
+  def Save(self, container, datatype=None):
+    ''' Save intensities and errors to a container
+    
+    Iterates over all data savers until it finds appropiate saver
+    
+    Arguments:
+      [datatype]: one of the DsfSave types registered in DsfSaverFactory
+    
+    Returns:
+      first successful datatype
+    
+    Exceptions:
+      TypeError if container and datatype don't agree
+    '''
+    from dsfsave import DsfSaveFactory
+    save_factory = DsfSaveFactory()
+    datatypes = [datatype,] if datatype else save_factory.datatypes
+    for datatype in datatypes:
+      try:
+        saver = save_factory.Instantiate(datatype)
+        saver.Save(self, container)
+        return datatype
+      except Exception, e:
+        pass
+    vlog.error('Appropriate loader not found for supplied data')
+    raise TypeError

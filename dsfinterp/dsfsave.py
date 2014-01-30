@@ -57,3 +57,23 @@ class DsfSaveMantidWorkspace2D(DsfSave):
     except TypeError:
       vlog.error('the workspace is not of type '+self.datatype)
       return
+
+
+class DsfSaveFactory(object):
+
+  savers = { 'mantid::Workspace2D':DsfSaveMantidWorkspace2D,
+            }
+
+  def __init__(self):
+    pass
+
+  @property
+  def datatypes(self):
+    ''' Handy property returning the data types '''
+    return DsfSaveFactory.savers.keys()
+
+  def Instantiate(self, datatype):
+    ''' Instantiate a dynamic structure factor saver of appropriate type '''
+    if datatype not in self.datatypes:
+      vlog.error('No dynamic structure factor loader for type {0}'.format(datatype))
+    return DsfSaveFactory.savers[datatype]()
