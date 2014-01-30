@@ -105,8 +105,15 @@ class Interpolator(object):
     x = numpy.array( fseries )
     y = numpy.array( self.fitted )
     e = numpy.array( self.errors )
-    w = 1.0 / e
-    self.y = UnivariateSpline( x, y, w=w, s=len( fseries ) )
+    if e.any():
+      min_nonzero_error = numpy.min(e[numpy.nonzero(e)]) # smallest non-zero error
+      e = numpy.where(e >=min_nonzero_error, e, min_nonzero_error) # substitute zero errors with the smallest non-zero error
+      w = 1.0 / e
+      s = len( fseries ) 
+    else: # in the improbable case of no errors, force the spline to pass through all points
+      w = 1.0
+      s = 0
+    self.y = UnivariateSpline( x, y, w=w, s=s )
     self.e = interp1d(x, e, kind='linear')
 
 
