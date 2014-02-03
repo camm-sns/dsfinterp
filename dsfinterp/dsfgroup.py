@@ -44,7 +44,7 @@ class DsfGroup(object):
       import bisect
       i = bisect.bisect_left(self.fseries, dsf.fvalue)
       self.fseries.insert(i, dsf.fvalue)
-      self.dsfseries.insert(i, dsf.fvalue)
+      self.dsfseries.insert(i, dsf)
 
   def ExtractSignalSeries(self, index ):
     series = []
