@@ -79,33 +79,35 @@ class Interpolator(object):
         vlog.error(message)
         raise ValueError(message)
       from numpy import polyfit
-      windowlength = 5 # important to be odd number
-      if len( fseries ) < windowlength:
-        vlog.error( 'series has to contain at least {0} members'.format( windowlength ) )
+      if len( fseries ) < self.windowlength:
+        vlog.error( 'series has to contain at least {0} members'.format( self.windowlength ) )
       else:
         # Lower boundary, the first three values
-        x = fseries[ : windowlength ]
-        y = signalseries[ : windowlength ]
+        x = fseries[ : self.windowlength ]
+        y = signalseries[ : self.windowlength ]
         coeffs, residuals, rank, singular_values, rcond= polyfit(x,y,2, full=True) #second order polynomial
         quadF = lambda xx: coeffs[0]*xx*xx + coeffs[1]*xx + coeffs[2]
-        self.fitted = [ quadF(x[0]), quadF(x[1]), quadF(x[2]) ]
+        self.fitted = []
+        for i in range(0, 1+self.windowlength/2):
+          self.fitted.append(quadF(x[i]))
         residual = numpy.sqrt(numpy.mean( residuals )) #average residual
-        self.errors = [ residual, residual, residual]
+        self.errors = [residual,] * (1+self.windowlength/2)
         # Continue until hitting the upper boundary
         index = 1 # lower bound of the regression window
-        while ( index + windowlength <= len( fseries ) ):
-          x = fseries[ index : index + windowlength ]
-          y = signalseries[ index : index + windowlength ]
+        while ( index + self.windowlength <= len( fseries ) ):
+          x = fseries[ index : index + self.windowlength ]
+          y = signalseries[ index : index + self.windowlength ]
           coeffs, residuals, rank, singular_values, rcond = polyfit(x,y,2, full=True) #second order polynomial
           quadF = lambda xx: coeffs[0]*xx*xx + coeffs[1]*xx + coeffs[2]
-          self.fitted.append(quadF(x[2]))
+          self.fitted.append(quadF(x[self.windowlength/2]))
           residuals = numpy.square(numpy.vectorize(quadF)(x) - y)
           residual = numpy.sqrt( numpy.mean(residuals)) #average residual
           self.errors.append(residual)
           # Resolve the upper boundary
-          if index + windowlength +1 == len( fseries ):
-            self.fitted += [ quadF(x[3]), quadF(x[4]) ]
-            self.errors += [ residual, residual ]
+          if index + self.windowlength == len( fseries ):
+            for i in range(1+self.windowlength/2, self.windowlength):
+              self.fitted.append(quadF(x[i]))
+              self.errors.append(residual)
           index += 1
     else:
       if self.windowlength == 0:
