@@ -61,29 +61,29 @@ class TestInterpolator(unittest.TestCase):
     ''' Just run the linear and quadratic interpolations '''
 
     fseries, signalseries, errorseries = self.ServeInput()
-    interpolator = Interpolator(fseries, signalseries, running_regr_type = 'linear')
+    interpolator = Interpolator(fseries, signalseries, running_regr_type = 'linear', windowlength=5)
     y_interpolated = interpolator.y(fseries)
     e_interpolated = interpolator.e(fseries)
 
     fseries, signalseries, errorseries = self.ServeInput(create_errorseries=True)
-    interpolator = Interpolator(fseries, signalseries, running_regr_type = 'linear')
+    interpolator = Interpolator(fseries, signalseries, running_regr_type = 'linear', windowlength=5)
     y_interpolated = interpolator.y(fseries)
     e_interpolated = interpolator.e(fseries)
 
     fseries, signalseries, errorseries = self.ServeInput()
-    interpolator = Interpolator(fseries, signalseries, running_regr_type = 'quadratic')
+    interpolator = Interpolator(fseries, signalseries, running_regr_type = 'quadratic', windowlength=5)
     y_interpolated = interpolator.y(fseries)
     e_interpolated = interpolator.e(fseries)
 
     fseries, signalseries, errorseries = self.ServeInput(create_errorseries=True)
-    interpolator = Interpolator(fseries, signalseries, running_regr_type = 'quadratic')
+    interpolator = Interpolator(fseries, signalseries, running_regr_type = 'quadratic', windowlength=5)
     y_interpolated = interpolator.y(fseries)
     e_interpolated = interpolator.e(fseries)
 
   def test__call__(self):
     ''' Just make sure the object is callable '''
     fseries, signalseries, errorseries = self.ServeInput()
-    interpolator = Interpolator(fseries, signalseries, running_regr_type = 'linear')
+    interpolator = Interpolator(fseries, signalseries, running_regr_type = 'linear', windowlength=5)
     interpolator(numpy.mean(fseries))
     # Test the bounding errors
     self.assertEqual( interpolator(min(fseries)-1.0), (float('inf'),float('inf')) )

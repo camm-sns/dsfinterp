@@ -14,7 +14,7 @@ class Interpolator(object):
   '''
 
 
-  def __init__(self, fseries, signalseries, errorseries=None, running_regr_type = 'linear' ):
+  def __init__(self, fseries, signalseries, errorseries=None, running_regr_type = 'linear', windowlength=0):
     '''
     Arguments:
       [running_regr_type]: method for the local, runnig regression
@@ -26,46 +26,58 @@ class Interpolator(object):
       y: interpolator object for the struc ture factor (cubic spline)
       e: interpolator object for the error (linear)
       running_regr_type: type of running regression
+      windowlength: length of window where local regression is done. Select zero for no regression
     '''
     # Deal with possible errors
     if len( fseries ) != len( signalseries ):
       vlog.error( 'signal and external parameter series have different lenght!' )
 
     self.running_regr_type = running_regr_type
+    self.windowlength = windowlength
     self.range = ( fseries[ 0 ], fseries[ -1 ] )
-    # Do running regression, and if neccessary estimate errors
-    if running_regr_type == 'linear':
+    # Do running regression, and if necessary estimate errors
+    if self.windowlength and running_regr_type == 'linear':
+      if self.windowlength < 3:
+        message = 'Linear regression requires a window length bigger than 2'
+        vlog.error(message)
+        raise ValueError(message)
       from scipy.stats import linregress
-      windowlength = 5 # important to be odd number
-      if len( fseries ) < windowlength:
+      if len( fseries ) < self.windowlength:
         vlog.error( 'series has to contain at least {0} members'.format( windowlength ) )
       else:
-        # Lower boundary, the first three values
-        x = fseries[ : windowlength ]
-        y = signalseries[ : windowlength ]
+        # Lower boundary, the first self.windowlength/2 values
+        x = fseries[ : self.windowlength ]
+        y = signalseries[ : self.windowlength ]
         slope, intercept, r_value, p_value, std_err = linregress( x, y )
         linF = lambda xx: intercept + slope * xx
-        self.fitted = [ linF(x[0]), linF(x[1]), linF(x[2]) ]
+        self.fitted = []
+        for i in range(0, 1+self.windowlength/2):
+          self.fitted.append(linF(x[i]))
         residuals = numpy.square(numpy.vectorize(linF)(x) - y)
         residual = numpy.sqrt( numpy.mean(residuals)) #average residual
-        self.errors = [ residual, residual, residual]
+        self.errors = [residual,] * (1+self.windowlength/2)
         # Continue until hitting the upper boundary
         index = 1 # lower bound of the regression window
-        while ( index + windowlength <= len( fseries ) ):
-          x = fseries[ index : index + windowlength ]
-          y = signalseries[ index : index + windowlength ]
+        while ( index + self.windowlength <= len( fseries ) ):
+          x = fseries[ index : index + self.windowlength ]
+          y = signalseries[ index : index + self.windowlength ]
           slope, intercept, r_value, p_value, std_err = linregress( x, y )
           linF = lambda xx: intercept + slope * xx
-          self.fitted.append(linF(x[2]))
+          self.fitted.append(linF(x[self.windowlength/2]))
           residuals = numpy.square(numpy.vectorize(linF)(x) - y)
           residual = numpy.sqrt( numpy.mean(residuals)) #average residual
           self.errors.append(residual)
           # Resolve the upper boundary
-          if index + windowlength +1 == len( fseries ):
-            self.fitted += [ linF(x[3]), linF(x[4]) ]
-            self.errors += [ residual, residual ]
+          if index + self.windowlength == len( fseries ):
+            for i in range(1+self.windowlength/2, self.windowlength):
+              self.fitted.append(linF(x[i]))
+              self.errors.append(residual)
           index += 1
-    elif running_regr_type == 'quadratic':
+    elif self.windowlength and running_regr_type == 'quadratic':
+      if self.windowlength < 4:
+        message = 'Quadratic regression requires a window length bigger than 3'
+        vlog.error(message)
+        raise ValueError(message)
       from numpy import polyfit
       windowlength = 5 # important to be odd number
       if len( fseries ) < windowlength:
@@ -96,7 +108,10 @@ class Interpolator(object):
             self.errors += [ residual, residual ]
           index += 1
     else:
-      vlog.warning( 'Requested regression type not recogized' )
+      if self.windowlength == 0:
+        raise NotImplementedError('Initialize attributes for the case of windowlength==0')
+      else:
+        vlog.warning( 'Requested regression type not recogized' )
 
     if errorseries is not None:
       self.errors = errorseries
