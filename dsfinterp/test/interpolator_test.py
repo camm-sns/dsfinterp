@@ -61,6 +61,13 @@ class TestInterpolator(unittest.TestCase):
     ''' Just run the linear and quadratic interpolations '''
 
     fseries, signalseries, errorseries = self.ServeInput()
+    interpolator = Interpolator(fseries, signalseries, running_regr_type = 'linear', windowlength=0)
+    y_interpolated = interpolator.y(fseries)
+    e_interpolated = interpolator.e(fseries)
+    self.assertAlmostEqual(numpy.sum(signalseries-y_interpolated), 0.0, places=10)
+    self.assertAlmostEqual(numpy.sum(e_interpolated), 0.0, places=10)
+
+    fseries, signalseries, errorseries = self.ServeInput()
     interpolator = Interpolator(fseries, signalseries, running_regr_type = 'linear', windowlength=5)
     y_interpolated = interpolator.y(fseries)
     e_interpolated = interpolator.e(fseries)

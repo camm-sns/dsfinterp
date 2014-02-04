@@ -31,7 +31,6 @@ class Interpolator(object):
     # Deal with possible errors
     if len( fseries ) != len( signalseries ):
       vlog.error( 'signal and external parameter series have different lenght!' )
-
     self.running_regr_type = running_regr_type
     self.windowlength = windowlength
     self.range = ( fseries[ 0 ], fseries[ -1 ] )
@@ -111,10 +110,11 @@ class Interpolator(object):
           index += 1
     else:
       if self.windowlength == 0:
-        raise NotImplementedError('Initialize attributes for the case of windowlength==0')
+        self.fitted = copy.copy(signalseries)
+        self.errors = [0.,] * len( fseries )
       else:
         vlog.warning( 'Requested regression type not recogized' )
-
+    # Passed errors take precedence over calculated errors
     if errorseries is not None:
       self.errors = errorseries
     # Interpolators for fitted and errors
@@ -127,8 +127,8 @@ class Interpolator(object):
       e = numpy.where(e >=min_nonzero_error, e, min_nonzero_error) # substitute zero errors with the smallest non-zero error
       w = 1.0 / e
       s = len( fseries ) 
-    else: # in the improbable case of no errors, force the spline to pass through all points
-      w = 1.0
+    else: # in the case of no errors, force the spline to pass through all points
+      w = numpy.ones(len(fseries))
       s = 0
     self.y = UnivariateSpline( x, y, w=w, s=s )
     self.e = interp1d(x, e, kind='linear')
