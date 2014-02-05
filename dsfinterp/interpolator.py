@@ -14,7 +14,7 @@ class Interpolator(object):
   '''
 
 
-  def __init__(self, fseries, signalseries, errorseries=None, running_regr_type = 'linear', windowlength=0):
+  def __init__(self, fseries, signalseries, errorseries=None, running_regr_type = 'linear', windowlength=3):
     '''
     Arguments:
       [running_regr_type]: method for the local, runnig regression

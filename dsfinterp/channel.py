@@ -46,7 +46,7 @@ class Channel( object ):
       vlog.error("interpolator has not been initialized for this channel")
       return (float('inf'),float('inf'))
 
-  def InitializeInterpolator(self, fseries, running_regr_type = 'linear'):
+  def InitializeInterpolator(self, fseries, running_regr_type = 'linear', windowlength=3):
     ''' Initialize the interpolator for this channel
     
     Arguments:

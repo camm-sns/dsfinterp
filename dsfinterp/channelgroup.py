@@ -43,10 +43,10 @@ class ChannelGroup(object):
       self.channels[i].SetSignalSeries( dsfg.ExtractSignalSeries(i) )
       self.channels[i].SetErrorSeries( dsfg.ExtractErrorSeries(i) )
 
-  def InitializeInterpolator(self, running_regr_type = 'linear'):
+  def InitializeInterpolator(self, running_regr_type = 'linear', windowlength=3):
     ''' Create the spline interpolator for each channel '''
     def initInterp(channel):
-      channel.InitializeInterpolator( self.fseries, running_regr_type = running_regr_type)
+      channel.InitializeInterpolator( self.fseries, running_regr_type = running_regr_type, windowlength=windowlength)
       return channel
     vinitInterp = numpy.vectorize( initInterp ) # faster than the classic "for" loop
     self.channels[:] = vinitInterp( self.channels )
