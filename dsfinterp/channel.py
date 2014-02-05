@@ -65,7 +65,7 @@ class Channel( object ):
       vlog.error( 'signal and external parameter series have different lenght!' )
       return None
 
-    self.interpolator = Interpolator( fseries, self.signalseries, errorseries = self.errorseries, running_regr_type = running_regr_type)
+    self.interpolator = Interpolator( fseries, self.signalseries, errorseries = self.errorseries, running_regr_type = running_regr_type, windowlength=windowlength)
     return self.interpolator
 
   def __call__(self, fvalue ):
