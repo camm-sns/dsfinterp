@@ -1,0 +1,2 @@
+include README.md
+recurse-include dsfinterp/test/data/*.nxs
