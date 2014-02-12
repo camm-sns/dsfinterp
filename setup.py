@@ -5,7 +5,7 @@ Created on Jan 15, 2014
 '''
 
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(
   name = 'dsfinterp',
